@@ -29,6 +29,7 @@ class HotelSearchResultPage extends StatefulWidget {
 
 class BuildHotelSearchResultState extends State<HotelSearchResultPage>
     with WidgetsBindingObserver {
+  int count;
   List<HotelInfo> _list = [];
   int length = 0;
   AppLifecycleState _notification;

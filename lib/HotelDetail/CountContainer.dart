@@ -13,11 +13,10 @@ class CountContainer extends InheritedWidget {
       @required this.hotelDetailState,
       @required this.increment,
       @required Widget child})
-      : super(key: key);
+      : super(key: key, child: child);
 
   @override
   bool updateShouldNotify(CountContainer oldWidget) {
-    return hotelDetailState.count !=
-        oldWidget.hotelDetailState.count;
+    return hotelDetailState.count != oldWidget.hotelDetailState.count;
   }
 }

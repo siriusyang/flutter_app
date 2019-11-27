@@ -1,4 +1,6 @@
+class CustomEvent {
+  int x;
+  int y;
 
-class CustomEvent{
-  
+  CustomEvent(this.x, this.y);
 }

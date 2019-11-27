@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/NativeView/BaiduMapView.dart';
 
-class FileRedAndWritePage extends StatefulWidget {
+class NativeViewPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return FileRedAndWriteState();
+    return NativeViewState();
   }
 }
 
-class FileRedAndWriteState extends State<FileRedAndWritePage> {
+class NativeViewState extends State<NativeViewPage> {
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("FileRedAndWritePage"));
+    return Scaffold(
+      appBar: AppBar(title: Text("NativeViewPage")),
+      body: Center(child: BaiduMapView()),
+    );
   }
 }

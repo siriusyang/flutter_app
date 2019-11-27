@@ -1,6 +1,15 @@
+import 'dart:async';
+
+import 'package:event_bus/event_bus.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/HotelDetail/Cake.dart';
+import 'package:flutter_app/HotelDetail/CountContainer.dart';
+import 'package:flutter_app/HotelDetail/Counter.dart';
+import 'package:flutter_app/HotelDetail/CustomEvent.dart';
+import 'package:flutter_app/HotelDetail/CustomNotification.dart';
+
+EventBus eventBus = new EventBus();
 
 class HotelDetail extends StatelessWidget {
   @override
@@ -9,24 +18,36 @@ class HotelDetail extends StatelessWidget {
         debugShowCheckedModeBanner: true,
         title: "IHG",
         theme: ThemeData(primarySwatch: Colors.blue),
-        home: HotelDetailBody());
+        home: HotelDetailPage());
   }
 }
 
-class HotelDetailBody extends StatefulWidget {
+class HotelDetailPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return HotelDetailState();
   }
 }
 
-class HotelDetailState extends State<HotelDetailBody> {
+class HotelDetailState extends State<HotelDetailPage> {
   ScrollController _controller; //ListView控制器
   bool isToTop = false;
+  int count = 0;
+  StreamSubscription subscription;
+  int x = 0;
+  int y = 0;
 
   @override
   void initState() {
     super.initState();
+
+    subscription = eventBus.on<CustomEvent>().listen((onEvent) {
+      setState(() {
+        x = onEvent.x;
+        y = onEvent.y;
+        print("subscription");
+      });
+    });
     _controller = ScrollController();
     _controller.addListener(() {
       if (_controller.offset > 200) {
@@ -49,7 +70,7 @@ class HotelDetailState extends State<HotelDetailBody> {
           controller: _controller,
           slivers: <Widget>[
             SliverAppBar(
-              title: Text('CustomScrollView Demo'),
+              title: Text('Hotel datail'),
               //标题
               floating: false,
               //设置悬浮样式
@@ -64,7 +85,10 @@ class HotelDetailState extends State<HotelDetailBody> {
               (context, index) {
                 switch (index) {
                   case 0:
-                    return Center(child: Cake(width: 200.0, height: 200.0));
+                    return Center(
+                        child: Cake(
+                            width: 200.0 - x.toDouble(),
+                            height: 200.0 - y.toDouble()));
                     break;
                   case 1:
                     return _buildRawGestureDetector();
@@ -99,6 +123,7 @@ class HotelDetailState extends State<HotelDetailBody> {
   @override
   void dispose() {
     _controller.dispose();
+    subscription.cancel();
     super.dispose();
   }
 
@@ -155,11 +180,46 @@ class HotelDetailState extends State<HotelDetailBody> {
     );
   }
 
+  void addCount() {
+    setState(() {
+      count++;
+      eventBus.fire(CustomEvent(50, 50));
+    });
+  }
+
+  void reset() {
+    setState(() {
+      count = 0;
+    });
+  }
+
   ExpansionTile _buildExpansionTile(final String _title) {
     return ExpansionTile(
         title: Text(_title),
         leading: Icon(Icons.add),
         backgroundColor: Colors.indigo,
-        children: <Widget>[Text("1"), Text("2")]);
+        children: <Widget>[
+          Text(
+            "点击${count}",
+            style: TextStyle(color: Colors.white),
+          ),
+          CountContainer(
+              hotelDetailState: this,
+              increment: addCount,
+              child: NotificationListener<CustomNotification>(
+                  onNotification: (onNotification) {
+                    setState(() {
+                      count = count + onNotification.count;
+                    });
+                    return true;
+                  },
+                  child: Counter())),
+          RaisedButton(
+            onPressed: reset,
+            child: Text(
+              "重置",
+            ),
+          )
+        ]);
   }
 }
