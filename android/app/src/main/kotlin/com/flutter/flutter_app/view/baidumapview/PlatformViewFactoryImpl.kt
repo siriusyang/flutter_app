@@ -11,15 +11,15 @@ import io.flutter.plugin.platform.PlatformViewFactory
 
 const val TAG = "PlatformView"
 
-class PlatformViewFactoryImpl(val _context: Context?, val binaryMessenger: BinaryMessenger, val mapView: MapView) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
+class PlatformViewFactoryImpl(val _context: Context?, val binaryMessenger: BinaryMessenger, val mapView: MapView?=null) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context?, id: Int, p2: Any?): PlatformView {
         Log.d(TAG, "PlatformViewFactoryImpl->create")
         return PlatformViewImpl(_context, id, mapView)
     }
 }
 
-class PlatformViewImpl(val context: Context?, val id: Int, val mapView: MapView) : PlatformView {
-    var _mapView: MapView?
+class PlatformViewImpl(context: Context?, val id: Int, val mapView: MapView?) : PlatformView {
+    var _mapView: MapView
 
     init {
         Log.d(TAG, "PlatformViewImpl->init")
@@ -28,13 +28,11 @@ class PlatformViewImpl(val context: Context?, val id: Int, val mapView: MapView)
 
     override fun getView(): View {
         Log.d(TAG, "getView")
-        return _mapView!!
+        return _mapView
     }
 
     override fun dispose() {
-        _mapView?.onDestroy()
-        _mapView = null
+        _mapView.onDestroy()
         Log.d(TAG, "dispose")
     }
-
 }
